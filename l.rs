@@ -1,7 +1,8 @@
 #![crate_type = "lib"]
 
-pub use p::identity;
+pub use p::p;
 
-identity! {
-    pub fn foo() {}
+pub fn foo() {
+	p();
 }
+

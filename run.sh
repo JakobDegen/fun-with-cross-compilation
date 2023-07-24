@@ -8,14 +8,17 @@ set -e
 export T32=i686-unknown-linux-gnu
 export T64=x86_64-unknown-linux-gnu
 
-rm -r build1 || true ; mkdir build1
-rm -r build2 || true ; mkdir build2
+rm -r build || true ; mkdir build
 
-rustc +stable-$T32 --target $T32 --edition 2021 -C metadata=p --crate-name p p.rs -o build1/libp32.so 
-rustc +stable-$T32 --target $T64 --edition 2021 -C metadata=l --crate-name l l.rs -o build1/libl.rlib --extern p=build1/libp32.so
+rustc +stable-$T32 --target $T64 --edition 2021 -C metadata=p --crate-name p p.rs -o build/libp.rlib
+rustc +stable-$T32 --target $T64 --edition 2021 -C metadata=l --crate-name l l.rs -o build/libl.rlib --extern p=build/libp.rlib
 
-rustc +stable-$T64 --target $T64 --edition 2021 -C metadata=p --crate-name p p.rs -o build2/libp64.so
-rustc +stable-$T64 --target $T64 --edition 2021 -C metadata=b --crate-name b b.rs -o build1/bin --extern l=build1/libl.rlib -L dependency=build2
+# Copy for debugging purposes
+cp -r build buildb
 
-chmod u+x build1/bin
-./build1/bin
+rm build/libp.rlib
+rustc +stable-$T64 --target $T64 --edition 2021 -C metadata=p --crate-name p p.rs -o build/libp.rlib
+rustc +stable-$T64 --target $T64 --edition 2021 -C metadata=b --crate-name b b.rs -o build/bin --extern l=build/libl.rlib -L dependency=build
+
+chmod u+x build/bin
+./build/bin
